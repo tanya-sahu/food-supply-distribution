@@ -24,7 +24,7 @@ RULES:
 async function generateSQLFromText(userPrompt) {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.8-flash', // Updated as instructed by Google API error
             contents: `${SYSTEM_PROMPT}\n\nUser Question: ${userPrompt}`,
         });
 
@@ -32,7 +32,7 @@ async function generateSQLFromText(userPrompt) {
         sqlQuery = sqlQuery.replace(/```sql/g, '').replace(/```/g, '').trim();
         return sqlQuery;
     } catch (error) {
-        console.error('Error generating SQL:', error);
+        console.error('Error generating SQL:', error.message);
         throw error;
     }
 }
