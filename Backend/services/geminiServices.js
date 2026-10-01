@@ -1,10 +1,10 @@
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize SDK
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const SYSTEM_PROMPT = `
-You are an expert MySQL Data Analyst for a Food Supply & Distribution System.
 Convert the user's natural language question into a valid, executable SQL query.
 
 DATABASE SCHEMA:
@@ -22,19 +22,24 @@ RULES:
 `;
 
 async function generateSQLFromText(userPrompt) {
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3.8-flash', // Updated as instructed by Google API error
-            contents: `${SYSTEM_PROMPT}\n\nUser Question: ${userPrompt}`,
-        });
+  try {
+    // Model Initialization
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-        let sqlQuery = response.text.trim();
-        sqlQuery = sqlQuery.replace(/```sql/g, '').replace(/```/g, '').trim();
-        return sqlQuery;
-    } catch (error) {
-        console.error('Error generating SQL:', error.message);
-        throw error;
-    }
+    const promptText = `${SYSTEM_PROMPT}\n\nUser Question: ${userPrompt}`;
+
+    const result = await model.generateContent(promptText);
+    const response = await result.response;
+    let sqlQuery = response.text().trim();
+
+    // Clean up code block markers
+    sqlQuery = sqlQuery.replace(/```sql/g, '').replace(/```/g, '').trim();
+
+    return sqlQuery;
+  } catch (error) {
+    console.error('Error generating SQL:', error.message);
+    throw error;
+  }
 }
 
 module.exports = { generateSQLFromText };

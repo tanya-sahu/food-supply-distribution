@@ -1,5 +1,5 @@
 const db = require('../config/db');
-const { generateSQLFromPrompt } = require('../services/geminiServices');
+const {generateSQLFromText} = require('../services/geminiServices');
 
 // 1. AI Query Handler
 const handleAIQuery = async (req, res) => {
@@ -9,7 +9,7 @@ const handleAIQuery = async (req, res) => {
   }
 
   try {
-    const sqlQuery = await generateSQLFromPrompt(prompt);
+    const sqlQuery = await generateSQLFromText(prompt);
     const [rows] = await db.query(sqlQuery);
     return res.json({ success: true, sql: sqlQuery, data: rows });
   } catch (error) {

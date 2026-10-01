@@ -3,12 +3,14 @@ const cors = require('cors');
 require('dotenv').config();
 
 const queryRoutes = require('./routes/queryRoute');
+const distributionRoutes = require('./routes/distributionRoute');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use('/api', queryRoutes);
+app.use('/api', distributionRoutes);
 
 app.get('/', (req, res) => {
     res.send('Food Supply AI Backend Running');
